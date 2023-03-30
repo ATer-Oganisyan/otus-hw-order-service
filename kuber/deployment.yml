@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: otus-crud-server-deployment
+  name: order-service-deployment
   labels:
-    app: simple-http-crud-server
+    app: order-service
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: simple-http-crud-server
+      app: order-service
   template:
     metadata:
       labels:
-        app: simple-http-crud-server
+        app: order-service
     spec:
       containers:
-      - name: simple-http-crud-server
-        image: arsenteroganisyan/otus-crud-server:v1
+      - name: order-service
+        image: arsenteroganisyan/order-service:v1
         ports:
         - containerPort: 8000
         env:
