@@ -8,7 +8,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: migration
-        image: arsenteroganisyan/otus-crud-server-sql-migrator:v2
+        image: arsenteroganisyan/otus-crud-server-sql-migrator:v3
         env:
           - name: MYSQL_HOST
             valueFrom:
