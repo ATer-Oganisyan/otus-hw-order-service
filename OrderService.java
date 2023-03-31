@@ -176,7 +176,7 @@ public class OrderService {
                 String good_name = "" + rs.getString(9);
                 String good_description = rs.getString(10);
                 String measurement_units = "" + rs.getString(11);
-                String price_per_unit = rs.getInt(12);
+                String price_per_unit = "" + rs.getInt(12);
                 status = getStatusById(rs.getInt(13));
                 r = "{id: " + id + ", good_code: " + good_code + ", good_name: " + good_name + ", good_description: " + good_description + ", price_per_unit: " + price_per_unit +  " }";
                 items.add(r);
