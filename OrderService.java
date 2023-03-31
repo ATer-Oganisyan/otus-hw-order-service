@@ -19,7 +19,7 @@ public class OrderService {
         String user = args[2];
         String password = args[3];
         String db = args[4];
-        System.out.println("Started: v2");
+        System.out.println("Started: v4");
         System.out.println(host);
         System.out.println(port);
         System.out.println(user);
@@ -263,16 +263,16 @@ public class OrderService {
 
     static private void routeCreateGood(HttpExchange t) throws IOException {
         System.out.println("routeCreateGood request accepted");
-        Map<String, String> q = postToMap(buf(t.getRequestBody()));
-        System.out.println("postToMap done");
-        String good_code = q.get("good_code");
-        String good_name = q.get("good_name");
-        String good_description = q.get("good_description");
-        String measurement_units = q.get("measurement_units");
-        String price_per_unit = q.get("price_per_unit");
         String r;
         System.out.println("start try-catch");
         try {
+            Map<String, String> q = postToMap(buf(t.getRequestBody()));
+            System.out.println("postToMap done");
+            String good_code = q.get("good_code");
+            String good_name = q.get("good_name");
+            String good_description = q.get("good_description");
+            String measurement_units = q.get("measurement_units");
+            String price_per_unit = q.get("price_per_unit");
             Statement _stmt=connection.createStatement();
             String selectSql = "select * from catalog where good_code = \"" + good_code + " \"";
             System.out.println("routeCreateGood request accepted, select sql: " + selectSql);
@@ -329,7 +329,7 @@ public class OrderService {
             String[] keyVal = part.split(":");
             result.put(keyVal[0], keyVal[1]);
         }
-        System.out.println("buf: " + result.toString());
+        System.out.println("postToMap: " + result.toString());
         return result;
     }
 
@@ -346,7 +346,7 @@ public class OrderService {
                 l.add(1, keyVal[1]);
                 result.add(l);
             }
-            System.out.println("buf: " + result.toString());
+            System.out.println("postToList: " + result.toString());
             return result;
         }
 
