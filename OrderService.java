@@ -19,7 +19,7 @@ public class OrderService {
         String user = args[2];
         String password = args[3];
         String db = args[4];
-        System.out.println("Started: v8");
+        System.out.println("Started: v9");
         System.out.println(host);
         System.out.println(port);
         System.out.println(user);
@@ -85,12 +85,12 @@ public class OrderService {
             ResultSet rs=stmt.executeQuery("select id, request_id, created_at, client_name, client_contact, status_id from orders");
             List<String> items = new ArrayList<>();
             while (rs.next()) {
-                String id = "" + rs.getInt(0);
-                String request_id = rs.getString(1);
-                String created_at = "" + rs.getInt(2);
-                String client_name = rs.getString(3);
-                String client_contact = "" + rs.getInt(4);
-                String status = getStatusById(rs.getInt(5));
+                String id = "" + rs.getInt(1);
+                String request_id = rs.getString(2);
+                String created_at = "" + rs.getInt(3);
+                String client_name = rs.getString(4);
+                String client_contact = "" + rs.getInt(5);
+                String status = getStatusById(rs.getInt(6));
                 r = "{id: " + id + ", request_id: " + request_id + ", created_at: " + created_at + ", client_name: " + client_name + ", client_contact: " + client_contact + ", status: " + status +  " }";
                 items.add(r);
             }
@@ -206,11 +206,11 @@ public class OrderService {
         String client_contact = "";
         for (List<String> p: q){
             if ("client_name".equals(p.get(0))) {
-                request_id = p.get(1);
+                client_name = p.get(1);
                 continue;
             }
             if ("client_contact".equals(p.get(0))) {
-                request_id = p.get(1);
+                client_contact = p.get(1);
                 continue;
             }
             positions.add(p);
@@ -234,7 +234,7 @@ public class OrderService {
             Statement _stmt3=connection.createStatement();
             ResultSet rs1 = _stmt3.executeQuery("select id from orders where request_id = \"" + request_id + " \"");
             rs1.next();
-            String orderId = "" + rs1.getInt(0);
+            String orderId = "" + rs1.getInt(1);
 
             Statement stmt=connection.createStatement();
             List<String> values = new ArrayList<>();
