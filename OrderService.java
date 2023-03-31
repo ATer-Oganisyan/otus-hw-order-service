@@ -19,7 +19,7 @@ public class OrderService {
         String user = args[2];
         String password = args[3];
         String db = args[4];
-        System.out.println("Started: v7");
+        System.out.println("Started: v8");
         System.out.println(host);
         System.out.println(port);
         System.out.println(user);
@@ -124,9 +124,9 @@ public class OrderService {
             while (rs.next()) {
                 String id = "" + rs.getInt(1);
                 String good_code = rs.getString(2);
-                String good_name = "" + rs.getInt(3);
+                String good_name = rs.getString(3);
                 String good_description = rs.getString(4);
-                String measurement_units = "" + rs.getInt(5);
+                String measurement_units = rs.getString(5);
                 String price_per_unit = "" + rs.getInt(6);
                 r = "{id: " + id + ", good_code: " + good_code + ", good_name: " + good_name + ", good_description: " + good_description + ", measurement_units: " + measurement_units + ", price_per_unit: " + price_per_unit +  " }";
                 items.add(r);
