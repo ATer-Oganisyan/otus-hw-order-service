@@ -19,7 +19,7 @@ public class OrderService {
         String user = args[2];
         String password = args[3];
         String db = args[4];
-        System.out.println("Started: v5");
+        System.out.println("Started: v6");
         System.out.println(host);
         System.out.println(port);
         System.out.println(user);
@@ -277,10 +277,13 @@ public class OrderService {
             String selectSql = "select * from catalog where good_code = \"" + good_code + " \"";
             System.out.println("routeCreateGood request accepted, select sql: " + selectSql);
             ResultSet rs=_stmt.executeQuery(selectSql);
-            r = "allready_exists";
             if (rs.next()) {
+                r = "good_allready_exists";
                 t.sendResponseHeaders(409, r.length());
-                System.out.println("good_allready_exists");
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
                 return;
             }
 
