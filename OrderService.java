@@ -178,11 +178,11 @@ public class OrderService {
                 String measurement_units = "" + rs.getString(11);
                 String price_per_unit = "" + rs.getInt(12);
                 status = getStatusById(rs.getInt(13));
-                r = "{id: " + id + ", good_code: " + good_code + ", good_name: " + good_name + ", good_description: " + good_description + ", price_per_unit: " + price_per_unit +  " }";
+                r = "{id: " + gId + ", good_code: " + good_code + ", good_name: " + good_name + ", good_description: " + good_description + ", price_per_unit: " + price_per_unit +  " }";
                 items.add(r);
             }
             String itemsJson = "{" + String.join(", \n", items) + "}";
-            r = "{id: " + gId + ", request_id: " + request_id + ", created_at: " + created_at + ", client_name: " + client_name + ", client_contact: " + client_contact + ", status: " + status +  " " +
+            r = "{id: " + id + ", request_id: " + request_id + ", created_at: " + created_at + ", client_name: " + client_name + ", client_contact: " + client_contact + ", status: " + status +  " " +
                     "items: " +
                     "" +
                     itemsJson
