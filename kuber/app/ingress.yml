@@ -8,7 +8,7 @@ spec:
   ingressClassName: nginx
   rules:
   - host: "arch.homework"
-  - http:
+    http:
       paths:
       - path: /
         pathType: Prefix
