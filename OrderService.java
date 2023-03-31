@@ -19,7 +19,7 @@ public class OrderService {
         String user = args[2];
         String password = args[3];
         String db = args[4];
-        System.out.println("Started: v9");
+        System.out.println("Started: v10");
         System.out.println(host);
         System.out.println(port);
         System.out.println(user);
@@ -244,7 +244,7 @@ public class OrderService {
                 values.add(value);
             }
             String valuesSql = String.join(", ", values);
-            String insertSql = "insert into order_items (orderId, good_id, cnt) values " + valuesSql;
+            String insertSql = "insert into order_items (order_id, good_id, cnt) values " + valuesSql;
             System.out.println("request to database: " + sql);
             stmt.executeUpdate(insertSql);
             r = "";
