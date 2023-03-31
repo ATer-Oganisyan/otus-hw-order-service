@@ -227,7 +227,7 @@ public class OrderService {
             }
 
             Statement _stmt2=connection.createStatement();
-            String sql = "insert into orders (request_id, client_name, client_contact) values (\"" + request_id + "\", " + client_name + "\", " + client_contact + ")";
+            String sql = "insert into orders (request_id, client_name, client_contact) values (\"" + request_id + "\", \"" + client_name + "\", \"" + client_contact + "\")";
 
             _stmt2.executeUpdate(sql);
 
@@ -285,7 +285,7 @@ public class OrderService {
             }
 
             Statement stmt=connection.createStatement();
-            String sql = "insert into catalog (good_code, good_name, good_description, measurement_units, price_per_unit) values (\"" + good_code + "\", " + good_name + "\", " + good_description + "\", " + measurement_units + "\", " + price_per_unit + ")";
+            String sql = "insert into catalog (good_code, good_name, good_description, measurement_units, price_per_unit) values (\"" + good_code + "\", \"" + good_name + "\", \"" + good_description + "\", \"" + measurement_units + "\", " + price_per_unit + ")";
             System.out.println("request to database: " + sql);
             stmt.executeUpdate(sql);
             r = "";
