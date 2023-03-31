@@ -19,6 +19,6 @@ Import Simple_CRUD.postman_collection.json into Postman.
 Enjoy :)
 
 
-docker build -t arsenteroganisyan/order-service:v14 /Users/arsen/otus-hw-order-service --no-cache --platform linux/amd64
+docker build -t arsenteroganisyan/order-service:v15 /Users/arsen/otus-hw-order-service --no-cache --platform linux/amd64
 
 docker build -t arsenteroganisyan/otus-order-service-sql-migrator:v8 /Users/arsen/otus-hw-order-service/kuber/mysql/migrations --no-cache --platform linux/amd64

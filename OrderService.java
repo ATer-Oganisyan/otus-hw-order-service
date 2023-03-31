@@ -19,7 +19,7 @@ public class OrderService {
         String user = args[2];
         String password = args[3];
         String db = args[4];
-        System.out.println("Started: v14");
+        System.out.println("Started: v15");
         System.out.println(host);
         System.out.println(port);
         System.out.println(user);
@@ -169,15 +169,16 @@ public class OrderService {
                 request_id = rs.getString(2);
                 created_at = "" + rs.getTimestamp(3).toString();
                 client_name = rs.getString(4);
-                client_contact = "" + rs.getInt(5);
+                client_contact = "" + rs.getString(5);
                 cnt = "" + rs.getInt(6);
                 String gId = rs.getString(7);
                 String good_code = "" + rs.getString(8);
-                String good_description = rs.getString(9);
-                String measurement_units = "" + rs.getString(10);
-                String price_per_unit = getStatusById(rs.getInt(11));
-                status = getStatusById(rs.getInt(12));
-                r = "{id: " + gId + ", good_code: " + good_code + ", good_description: " + good_description + ", price_per_unit: " + price_per_unit +  " }";
+                String good_name = "" + rs.getString(9);
+                String good_description = rs.getString(10);
+                String measurement_units = "" + rs.getString(11);
+                String price_per_unit = getStatusById(rs.getInt(12));
+                status = getStatusById(rs.getInt(13));
+                r = "{id: " + id + ", good_code: " + good_code + ", good_name: " + good_name + ", good_description: " + good_description + ", price_per_unit: " + price_per_unit +  " }";
                 items.add(r);
             }
             String itemsJson = "{" + String.join(", \n", items) + "}";
