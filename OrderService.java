@@ -147,7 +147,7 @@ public class OrderService {
 
     static private void routeOrder(HttpExchange t) throws IOException {
         System.out.println("Read request accepted");
-        Map<String, String> q = queryToMap(buf(t.getRequestURI().getQuery()));
+        Map<String, String> q = queryToMap(t.getRequestURI().getQuery());
         String qId = q.get("id");
         String r;
         String id = "";
@@ -262,17 +262,21 @@ public class OrderService {
     }
 
     static private void routeCreateGood(HttpExchange t) throws IOException {
-        System.out.println("Read request accepted");
+        System.out.println("routeCreateGood request accepted");
         Map<String, String> q = postToMap(buf(t.getRequestBody()));
+        System.out.println("postToMap done");
         String good_code = q.get("good_code");
         String good_name = q.get("good_name");
         String good_description = q.get("good_description");
         String measurement_units = q.get("measurement_units");
         String price_per_unit = q.get("price_per_unit");
         String r;
+        System.out.println("start try-catch");
         try {
             Statement _stmt=connection.createStatement();
-            ResultSet rs=_stmt.executeQuery("select * from catalog where good_code = \"" + good_code + " \"");
+            String selectSql = "select * from catalog where good_code = \"" + good_code + " \"";
+            System.out.println("routeCreateGood request accepted, select sql: " + selectSql);
+            ResultSet rs=_stmt.executeQuery(selectSql);
             r = "allready_exists";
             if (rs.next()) {
                 t.sendResponseHeaders(409, r.length());
@@ -293,6 +297,7 @@ public class OrderService {
             r = "internal server error";
             t.sendResponseHeaders(500, r.length());
         }
+        System.out.println("send body");
         OutputStream os = t.getResponseBody();
         os.write(r.getBytes());
         os.close();
