@@ -147,7 +147,7 @@ public class OrderService {
 
     static private void routeOrder(HttpExchange t) throws IOException {
         System.out.println("Read request accepted");
-        Map<String, String> q = postToMap(buf(t.getRequestBody()));
+        Map<String, String> q = queryToMap(buf(t.getRequestURI().getQuery()));
         String qId = q.get("id");
         String r;
         String id = "";
@@ -201,14 +201,10 @@ public class OrderService {
         List<List<String>> q = postToList(buf(t.getRequestBody()));
         List<List<String>> positions = new ArrayList<>();
         String ord, r;
-        String request_id = "";
+        String request_id = t.getRequestHeaders().getFirst("x-request-id");
         String client_name = "";
         String client_contact = "";
         for (List<String> p: q){
-            if ("request_id".equals(p.get(0))) {
-                request_id = p.get(1);
-                continue;
-            }
             if ("client_name".equals(p.get(0))) {
                 request_id = p.get(1);
                 continue;
