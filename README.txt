@@ -12,13 +12,13 @@ helm install my-release nginx-stable/nginx-ingress
 helm install myzql-release myZql/mysql -f kuber/mysql/values.yml
 k apply -f ./kuber/config/
 k apply -f ./kuber/mysql/migrations/  
-k apply -f ./kuber
+k apply -f ./kuber/app
 
 Import Simple_CRUD.postman_collection.json into Postman.
 
 Enjoy :)
 
 
-docker build -t arsenteroganisyan/order-service:v12 /Users/arsen/otus-hw-order-service --no-cache --platform linux/amd64
+docker build -t arsenteroganisyan/order-service:v14 /Users/arsen/otus-hw-order-service --no-cache --platform linux/amd64
 
 docker build -t arsenteroganisyan/otus-order-service-sql-migrator:v8 /Users/arsen/otus-hw-order-service/kuber/mysql/migrations --no-cache --platform linux/amd64
