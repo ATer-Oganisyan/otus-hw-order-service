@@ -19,7 +19,7 @@ public class OrderService {
         String user = args[2];
         String password = args[3];
         String db = args[4];
-        System.out.println("Started: v6");
+        System.out.println("Started: v7");
         System.out.println(host);
         System.out.println(port);
         System.out.println(user);
@@ -122,12 +122,12 @@ public class OrderService {
             ResultSet rs=stmt.executeQuery("select id, good_code, good_name, good_description, measurement_units, price_per_unit from catalog");
             List<String> items = new ArrayList<>();
             while (rs.next()) {
-                String id = "" + rs.getInt(0);
-                String good_code = rs.getString(1);
-                String good_name = "" + rs.getInt(2);
-                String good_description = rs.getString(3);
-                String measurement_units = "" + rs.getInt(4);
-                String price_per_unit = "" + rs.getInt(5);
+                String id = "" + rs.getInt(1);
+                String good_code = rs.getString(2);
+                String good_name = "" + rs.getInt(3);
+                String good_description = rs.getString(4);
+                String measurement_units = "" + rs.getInt(5);
+                String price_per_unit = "" + rs.getInt(6);
                 r = "{id: " + id + ", good_code: " + good_code + ", good_name: " + good_name + ", good_description: " + good_description + ", measurement_units: " + measurement_units + ", price_per_unit: " + price_per_unit +  " }";
                 items.add(r);
             }
@@ -162,18 +162,18 @@ public class OrderService {
             ResultSet rs=stmt.executeQuery("select o.id, o.request_id, o.created_at, o.client_name, o.client_contact, i.cnt, c.id, c.good_code, c.good_name, c.good_description, c.measurement_units, c.price_per_unit, o.status_id  from orders o left join order_items i on i.order_id = o.id join catalog c on c.id = i.good_id where o.id = " + qId);
             List<String> items = new ArrayList<>();
             while (rs.next()) {
-                id = "" + rs.getInt(0);
-                request_id = rs.getString(1);
-                created_at = "" + rs.getInt(2);
-                client_name = rs.getString(3);
-                client_contact = "" + rs.getInt(4);
-                cnt = "" + rs.getInt(5);
-                String gId = rs.getString(6);
-                String good_code = "" + rs.getInt(7);
-                String good_description = rs.getString(8);
-                String measurement_units = "" + rs.getInt(9);
-                String price_per_unit = getStatusById(rs.getInt(10));
-                status = getStatusById(rs.getInt(11));
+                id = "" + rs.getInt(1);
+                request_id = rs.getString(2);
+                created_at = "" + rs.getInt(3);
+                client_name = rs.getString(4);
+                client_contact = "" + rs.getInt(5);
+                cnt = "" + rs.getInt(6);
+                String gId = rs.getString(7);
+                String good_code = "" + rs.getInt(8);
+                String good_description = rs.getString(9);
+                String measurement_units = "" + rs.getInt(10);
+                String price_per_unit = getStatusById(rs.getInt(11));
+                status = getStatusById(rs.getInt(12));
                 r = "{id: " + gId + ", good_code: " + good_code + ", good_description: " + good_description + ", price_per_unit: " + price_per_unit +  " }";
                 items.add(r);
             }
