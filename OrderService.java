@@ -19,7 +19,7 @@ public class OrderService {
         String user = args[2];
         String password = args[3];
         String db = args[4];
-        System.out.println("Started: v10");
+        System.out.println("Started: v12");
         System.out.println(host);
         System.out.println(port);
         System.out.println(user);
@@ -87,7 +87,7 @@ public class OrderService {
             while (rs.next()) {
                 String id = "" + rs.getInt(1);
                 String request_id = rs.getString(2);
-                String created_at = "" + rs.getInt(3);
+                String created_at = "" + rs.getTimestamp(3).toString();
                 String client_name = rs.getString(4);
                 String client_contact = "" + rs.getInt(5);
                 String status = getStatusById(rs.getInt(6));
@@ -159,12 +159,15 @@ public class OrderService {
         String status = "";
         try {
             Statement stmt=connection.createStatement();
-            ResultSet rs=stmt.executeQuery("select o.id, o.request_id, o.created_at, o.client_name, o.client_contact, i.cnt, c.id, c.good_code, c.good_name, c.good_description, c.measurement_units, c.price_per_unit, o.status_id  from orders o left join order_items i on i.order_id = o.id join catalog c on c.id = i.good_id where o.id = " + qId);
+            String orderSql = "select o.id, o.request_id, o.created_at, o.client_name, o.client_contact, i.cnt, c.id, c.good_code, c.good_name, c.good_description, c.measurement_units, c.price_per_unit, o.status_id  from orders o left join order_items i on i.order_id = o.id join catalog c on c.id = i.good_id where o.id = " + qId;
+            System.out.println("sql: " + orderSql);
+            ResultSet rs=stmt.executeQuery(orderSql);
+
             List<String> items = new ArrayList<>();
             while (rs.next()) {
                 id = "" + rs.getInt(1);
                 request_id = rs.getString(2);
-                created_at = "" + rs.getInt(3);
+                created_at = "" + rs.getTimestamp(3).toString();
                 client_name = rs.getString(4);
                 client_contact = "" + rs.getInt(5);
                 cnt = "" + rs.getInt(6);
@@ -219,10 +222,13 @@ public class OrderService {
         try {
             Statement _stmt=connection.createStatement();
             ResultSet rs=_stmt.executeQuery("select * from orders where request_id = \"" + request_id + " \"");
-            r = "allready_exists";
             if (rs.next()) {
+                r = "order_allready_exists";
                 t.sendResponseHeaders(200, r.length());
-                System.out.println("order_allready_exists");
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
                 return;
             }
 
