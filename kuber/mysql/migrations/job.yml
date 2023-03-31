@@ -8,7 +8,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: migration
-        image: arsenteroganisyan/otus-order-service-sql-migrator:v1
+        image: arsenteroganisyan/otus-order-service-sql-migrator:v8
         env:
           - name: MYSQL_HOST
             valueFrom:

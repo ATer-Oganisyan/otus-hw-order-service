@@ -4,7 +4,7 @@ client_name VARCHAR(255) NOT NULL,
 client_contact VARCHAR(255) NOT NULL,
 request_id VARCHAR(255) NOT NULL UNIQUE KEY,
 created_at TIMESTAMP not null default CURRENT_TIMESTAMP,
-status_id TINYINT NOT NULL
+status_id TINYINT NOT NULL default 1
 );
 
 
