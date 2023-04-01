@@ -19,7 +19,7 @@ public class OrderService {
         String user = args[2];
         String password = args[3];
         String db = args[4];
-        System.out.println("Started: v16");
+        System.out.println("Started: v17");
         System.out.println(host);
         System.out.println(port);
         System.out.println(user);
@@ -182,11 +182,15 @@ public class OrderService {
                 items.add(r);
             }
             String itemsJson = "{" + String.join(", \n", items) + "}";
-            r = "{id: " + id + ", request_id: " + request_id + ", created_at: " + created_at + ", client_name: " + client_name + ", client_contact: " + client_contact + ", status: " + status +  " " +
-                    "items: " +
-                    "" +
-                    itemsJson
-                    + "}";
+            if (items.size() == 0) {
+                r = "{}";
+            } else {
+                r = "{id: " + id + ", request_id: " + request_id + ", created_at: " + created_at + ", client_name: " + client_name + ", client_contact: " + client_contact + ", status: " + status +  ", " +
+                        "items: " +
+                        "" +
+                        itemsJson
+                        + "}";
+            }
             System.out.println("send headers");
             t.sendResponseHeaders(200, r.length());
             System.out.println("success");
