@@ -1,0 +1,252 @@
+{
+	"info": {
+		"_postman_id": "f132be55-7694-4843-a661-0176dba07f27",
+		"name": "Order Service Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create good",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "good_code:gc1\ngood_name:Chair\ngood_description:Comfortable chair\nmeasurement_units:unit\nprice_per_unit:100"
+				},
+				"url": {
+					"raw": "http://arch.homework/goods/create",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"goods",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Trying create good with same good_code",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "good_code:gc1\ngood_name:Table\ngood_description:Comfortable table\nmeasurement_units:unit\nprice_per_unit:100"
+				},
+				"url": {
+					"raw": "http://arch.homework/goods/create",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"goods",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create another good",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "good_code:gc2\ngood_name:Table\ngood_description:Comfortable table\nmeasurement_units:unit\nprice_per_unit:100"
+				},
+				"url": {
+					"raw": "http://arch.homework/goods/create",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"goods",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Catalog",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://arch.homework/goods",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"goods"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create order",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-request-id",
+						"value": "2",
+						"type": "default"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "client_name:Arsen Ter-Oganiosyan\nclient_contact:043072424\n1:10\n2:1"
+				},
+				"url": {
+					"raw": "http://arch.homework/order/create",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"order",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Trying to create order with same request ID",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-request-id",
+						"value": "2",
+						"type": "default"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "client_name:Arsen Ter-Oganiosyan\nclient_contact:043072424\n1:10\n2:1"
+				},
+				"url": {
+					"raw": "http://arch.homework/order/create",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"order",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create another order",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-request-id",
+						"value": "3",
+						"type": "default"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "client_name:Arsen Ter-Oganiosyan\nclient_contact:043072424\n1:20\n2:2"
+				},
+				"url": {
+					"raw": "http://arch.homework/order/create",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"order",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Orders",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://arch.homework/orders",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://arch.homework/order?id=1",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"order"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

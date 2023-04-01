@@ -19,7 +19,7 @@ public class OrderService {
         String user = args[2];
         String password = args[3];
         String db = args[4];
-        System.out.println("Started: v17");
+        System.out.println("Started: v20");
         System.out.println(host);
         System.out.println(port);
         System.out.println(user);
@@ -178,7 +178,7 @@ public class OrderService {
                 String measurement_units = "" + rs.getString(11);
                 String price_per_unit = "" + rs.getInt(12);
                 status = getStatusById(rs.getInt(13));
-                r = "{id: " + gId + ", good_code: " + good_code + ", good_name: " + good_name + ", good_description: " + good_description + ", price_per_unit: " + price_per_unit +  " }";
+                r = "{id: " + gId + ", good_code: " + good_code + ", good_name: " + good_name + ", good_description: " + good_description + ", count: " + cnt + ", price_per_unit: " + price_per_unit +  " }";
                 items.add(r);
             }
             String itemsJson = "{" + String.join(", \n", items) + "}";
