@@ -48,11 +48,11 @@ public class OrderService {
         String dbUser = args[2];
         String dbPassword = args[3];
         String db = args[4];
-        sessionServiceHost = args[5];
+        sessionServiceHost = args[7];
         deleveryHost = args[6];
-        paymentHost = args[7];
+        paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Started: v100");
+        System.out.println("Started: v101");
         System.out.println(dbHost);
         System.out.println(dbPort);
         System.out.println(dbUser);

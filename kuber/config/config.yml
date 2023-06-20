@@ -3,6 +3,9 @@ kind: ConfigMap
 metadata:
   name: config
 data:
-  host: "myzql-release-mysql.default.svc.cluster.local"
-  port: "3306"
-  db: "crud"
+  order_db_host: "myzql-release-mysql.default.svc.cluster.local"
+  order_db_port: "3306"
+  order_db: "crud"
+  order_session_host: "otus-session-server.default.svc.cluster.local:8080"
+  order_delivery_host: "delivery-service.default.svc.cluster.local:8080"
+  order_payment_host: "payment-service.default.svc.cluster.local:8080"

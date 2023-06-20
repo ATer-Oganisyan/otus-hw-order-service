@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: order-service
-        image: arsenteroganisyan/order-service:v100
+        image: arsenteroganisyan/order-service:v101
 
         ports:
         - containerPort: 8000
@@ -25,24 +25,39 @@ spec:
             valueFrom:
               configMapKeyRef:
                 name: config
-                key: port
+                key: order_db_port
           - name: HOST
             valueFrom:
               configMapKeyRef:
                 name: config
-                key: host
+                key: order_db_host
           - name: USER
             valueFrom:
               secretKeyRef:
                 name: secret
-                key: user
+                key: order_db_user
           - name: DB
             valueFrom:
               configMapKeyRef:
                 name: config
-                key: db
+                key: order_db
           - name: PASSWRORD
             valueFrom:
               secretKeyRef:
                 name: secret
-                key: password
+                key: order_db_password
+          - name: SESSION_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: config
+                key: order_session_host
+          - name: PAYMENT_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: config
+                key: order_payment_host
+          - name: DELIVERY_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: config
+                key: order_delivery_host

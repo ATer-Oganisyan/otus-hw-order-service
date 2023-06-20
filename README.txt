@@ -42,4 +42,4 @@ docker build -t arsenteroganisyan/order-service:v100 /Users/arsen/otus-hw-order-
 
 To build DB migration container:
  
-docker build -t arsenteroganisyan/otus-order-service-sql-migrator:v100 /Users/arsen/otus-hw-order-service/kuber/mysql/migrations --no-cache --platform linux/amd64
+docker build -t arsenteroganisyan/otus-order-service-sql-migrator:v101 /Users/arsen/otus-hw-order-service/kuber/mysql/migrations --no-cache --platform linux/amd64
