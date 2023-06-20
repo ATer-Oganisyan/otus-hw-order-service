@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[7];
         stockHost = args[8];
-        System.out.println("Started: v20");
+        System.out.println("Started: v100");
         System.out.println(dbHost);
         System.out.println(dbPort);
         System.out.println(dbUser);
