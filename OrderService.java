@@ -90,14 +90,14 @@ public class OrderService {
             } else if ("/order/complete".equals(path)) { // check payment and delivery statuses and set order status
                 routeCompleteOrder(t);
                 System.out.println("matched");
-            } else if ("/order/set-delivery-slot".equals(path)) { // todo
-                routeCreateOrder(t);
+            } else if ("/order/set-delivery-slot".equals(path)) { // admin or current user
+                routeSetDeliverySlot(t);
                 System.out.println("matched");
             } else if ("/order/set-delivered".equals(path)) { // only admin can do it, and status will be checked
                 routeSetDelivered(t);
                 System.out.println("matched");
-            } else if ("/order/request-purchase".equals(path)) { // todo
-                routeCreateOrder(t);
+            } else if ("/order/request-purchase".equals(path)) { //
+                routeRequestPurchase(t);
                 System.out.println("matched");
             } else if ("/order/purchase-result".equals(path)) { //status will be checked
                 routePurchaseResult(t);
@@ -340,6 +340,34 @@ public class OrderService {
         }
 
     static private boolean transferRefund(String orderId) {
+        Headers headers = t.getRequestHeaders();
+        System.out.println("headers = " + headers);
+        String body = "order_id:" + orderId;
+        System.out.println("http request to payment service: " + body);
+        String r;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(scheme + paymentHost + "/transfer/refund"))
+                .timeout(Duration.ofMinutes(1))
+                .header("Content-Type", "plain/text")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+        HttpResponse<String> response;
+        System.out.println("HttpResponse<String> response;");
+        try {
+            System.out.println("try");
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("response = client.send(request, BodyHandlers.ofString());");
+            return response.statusCode() == 200 ? true : false;
+        } catch (IOException e) {
+            System.out.println("IOException");
+            return false;
+        } catch (InterruptedException e) {
+            System.out.println("InterruptedException");
+            return false;
+        }
+    }
+
+    static private boolean transferPurchase(String orderId, int amount) {
             Headers headers = t.getRequestHeaders();
             System.out.println("headers = " + headers);
             String body = "order_id:" + orderId;
@@ -366,6 +394,34 @@ public class OrderService {
                 return false;
             }
         }
+
+    static private boolean accquireSlot(String slotId) {
+        Headers headers = t.getRequestHeaders();
+        System.out.println("headers = " + headers);
+        String body = "slot_id:" + slotId;
+        System.out.println("http request to payment service: " + body);
+        String r;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(scheme + deleveryHost + "/accquire-slot"))
+                .timeout(Duration.ofMinutes(1))
+                .header("Content-Type", "plain/text")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+        HttpResponse<String> response;
+        System.out.println("HttpResponse<String> response;");
+        try {
+            System.out.println("try");
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("response = client.send(request, BodyHandlers.ofString());");
+            return response.statusCode() == 200 ? true : false;
+        } catch (IOException e) {
+            System.out.println("IOException");
+            return false;
+        } catch (InterruptedException e) {
+            System.out.println("InterruptedException");
+            return false;
+        }
+    }
 
     static private boolean releaseItem(String orderId, String catalogId, int cnt) {
             Headers headers = t.getRequestHeaders();
@@ -488,33 +544,23 @@ public class OrderService {
         os.close();
     }
 
-    static private void routeCreateOrder(HttpExchange t) throws IOException {
-        System.out.println("Read request accepted");
-        List<List<String>> q = postToList(buf(t.getRequestBody()));
+    static private void routeSetDeliverySlot(HttpExchange t) throws IOException {
+        System.out.println("routeRequestRefund accepted");
+        List<List<String>> q = postToMap(buf(t.getRequestBody()));
         List<List<String>> positions = new ArrayList<>();
-        String ord, r;
-        String request_id = t.getRequestHeaders().getFirst("x-request-id");
-        String client_name = "";
-        String client_contact = "";
-        for (List<String> p: q){
-            if ("client_name".equals(p.get(0))) {
-                client_name = p.get(1);
-                continue;
-                HttpClient
-            }
-            if ("client_contact".equals(p.get(0))) {
-                client_contact = p.get(1);
-                continue;
-            }
-            positions.add(p);
-        }
+        String orderId = q.get("order_id");
+        String slotId = q.get("slot_id");
+        Map<String, String> userInfo = getUserInfo(t);
 
         try {
-            Statement _stmt=connection.createStatement();
-            ResultSet rs=_stmt.executeQuery("select * from orders where request_id = \"" + request_id + " \"");
-            if (rs.next()) {
-                r = "order_allready_exists";
-                t.sendResponseHeaders(200, r.length());
+
+            String orderSql = "select o.id, o.status_id, o.delivery_status_id, o.slot_id, o.user_id from orders o where o.id = " + orderId;
+            System.out.println("sql: " + orderSql);
+            ResultSet rs=stmt.executeQuery(orderSql);
+
+            if (!rs.next()) {
+                r = "order is not found";
+                t.sendResponseHeaders(404, r.length());
                 System.out.println(r);
                 OutputStream os = t.getResponseBody();
                 os.write(r.getBytes());
@@ -522,39 +568,52 @@ public class OrderService {
                 return;
             }
 
-            Statement _stmt2=connection.createStatement();
-            String sql = "insert into orders (request_id, client_name, client_contact) values (\"" + request_id + "\", \"" + client_name + "\", \"" + client_contact + "\")";
-
-            _stmt2.executeUpdate(sql);
-
-            Statement _stmt3=connection.createStatement();
-            ResultSet rs1 = _stmt3.executeQuery("select id from orders where request_id = \"" + request_id + " \"");
-            rs1.next();
-            String orderId = "" + rs1.getInt(1);
-
-            Statement stmt=connection.createStatement();
-            List<String> values = new ArrayList<>();
-
-            for (List<String> p : positions) {
-                String value = "(" + orderId + ", " + p.get(0) + ", " + p.get(1) + ")";
-                values.add(value);
+            if (!userInfo.get("role").equals("admin") && !userInfo.get("user".equals(rs.getInt(5)))) {
+                r = "not permitted;
+                t.sendResponseHeaders(403, r.length());
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+                return;
             }
-            String valuesSql = String.join(", ", values);
-            String insertSql = "insert into order_items (order_id, good_id, cnt) values " + valuesSql;
-            System.out.println("request to database: " + sql);
-            stmt.executeUpdate(insertSql);
-            r = "";
-            System.out.println("send headers");
-            t.sendResponseHeaders(200, r.length());
-            System.out.println("success");
+
+            if (!rs.getInt(3) == DELEVERY_STATUS_RECEIVED || rs.getInt(4) != null) {
+                r = "incorrect status";
+                t.sendResponseHeaders(409, r.length());
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+                return;
+            }
+
+            if (accquireSlot(slotId)) {
+                Statement _stmt2=connection.createStatement();
+                String sql = "update orders set slot_id = \"" + slotId + "\" where id = " + orderId;
+                _stmt2.executeUpdate(sql);
+                r = "";
+                t.sendResponseHeaders(200, r.length());
+                System.out.println("ok");
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+            } else {
+                r = "cant set slot";
+                t.sendResponseHeaders(500, r.length());
+                System.out.println("ok");
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+            }
         } catch (Throwable e) {
             System.out.println("error: " + e.getMessage());
             r = "internal server error";
             t.sendResponseHeaders(500, r.length());
+            OutputStream os = t.getResponseBody();
+            os.write(r.getBytes());
+            os.close();
         }
-        OutputStream os = t.getResponseBody();
-        os.write(r.getBytes());
-        os.close();
     }
 
     static private void routeCommitOrder(HttpExchange t) throws IOException {
@@ -625,7 +684,8 @@ public class OrderService {
             }
 
             Statement _stmt2=connection.createStatement();
-            String sql = "update orders set status = " + ORDER_STATUS_COMMITED + " where id = " + orderId;
+            int amount = 500; // todo: calculate order amount
+            String sql = "update orders set status = " + ORDER_STATUS_COMMITED + ", amount = " + amount + " where id = " + orderId;
             _stmt2.executeUpdate(sql);
             r = "";
             t.sendResponseHeaders(200, r.length());
@@ -813,68 +873,68 @@ public class OrderService {
         }
 
     static private void routePurchaseResult(HttpExchange t) throws IOException {
-            System.out.println("Read request accepted");
-            List<List<String>> q = postToMap(buf(t.getRequestBody()));
-            List<List<String>> positions = new ArrayList<>();
-            String orderId = q.get("order_id");
-            Map<String, String> userInfo = getUserInfo(t);
+        System.out.println("Read request accepted");
+        List<List<String>> q = postToMap(buf(t.getRequestBody()));
+        List<List<String>> positions = new ArrayList<>();
+        String orderId = q.get("order_id");
+        Map<String, String> userInfo = getUserInfo(t);
 
-            try {
+        try {
 
-                String orderSql = "select o.id, o.status_id, o.payment_status_id, o.slot_id, o.user_id from orders o where o.id = " + orderId;
-                System.out.println("sql: " + orderSql);
-                ResultSet rs=stmt.executeQuery(orderSql);
+            String orderSql = "select o.id, o.status_id, o.payment_status_id, o.slot_id, o.user_id from orders o where o.id = " + orderId;
+            System.out.println("sql: " + orderSql);
+            ResultSet rs=stmt.executeQuery(orderSql);
 
-                if (!rs.next()) {
-                    r = "order is not found";
-                    t.sendResponseHeaders(404, r.length());
-                    System.out.println(r);
-                    OutputStream os = t.getResponseBody();
-                    os.write(r.getBytes());
-                    os.close();
-                    return;
-                }
+            if (!rs.next()) {
+                r = "order is not found";
+                t.sendResponseHeaders(404, r.length());
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+                return;
+            }
 
-                if (!rs.getInt(3) != PAYMENT_STATUS_REQUESTED) {
-                    r = "incorrect status";
-                    t.sendResponseHeaders(409, r.length());
-                    System.out.println(r);
-                    OutputStream os = t.getResponseBody();
-                    os.write(r.getBytes());
-                    os.close();
-                    return;
-                }
+            if (!rs.getInt(3) != PAYMENT_STATUS_REQUESTED) {
+                r = "incorrect status";
+                t.sendResponseHeaders(409, r.length());
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+                return;
+            }
 
-                int status = transferStatus(orderId);
-                if (status != TRANSFER_STATUS_EXECUTED) {
-                    r = "incorrect payment status";
-                    t.sendResponseHeaders(409, r.length());
-                    System.out.println("ok");
-                    OutputStream os = t.getResponseBody();
-                    os.write(r.getBytes());
-                    os.close();
-                    return;
-                }
-
-                Statement _stmt2=connection.createStatement();
-                String sql = "update orders set payment_status_id = " + PAYMENT_STATUS_EXECUTED + " where id = " + orderId;
-                _stmt2.executeUpdate(sql);
-                r = "";
-                t.sendResponseHeaders(200, r.length());
+            int status = transferStatus(orderId);
+            if (status != TRANSFER_STATUS_EXECUTED) {
+                r = "incorrect payment status";
+                t.sendResponseHeaders(409, r.length());
                 System.out.println("ok");
                 OutputStream os = t.getResponseBody();
                 os.write(r.getBytes());
                 os.close();
                 return;
-            } catch (Throwable e) {
-                System.out.println("error: " + e.getMessage());
-                r = "internal server error";
-                t.sendResponseHeaders(500, r.length());
-                OutputStream os = t.getResponseBody();
-                os.write(r.getBytes());
-                os.close();
             }
+
+            Statement _stmt2=connection.createStatement();
+            String sql = "update orders set payment_status_id = " + PAYMENT_STATUS_EXECUTED + " where id = " + orderId;
+            _stmt2.executeUpdate(sql);
+            r = "";
+            t.sendResponseHeaders(200, r.length());
+            System.out.println("ok");
+            OutputStream os = t.getResponseBody();
+            os.write(r.getBytes());
+            os.close();
+            return;
+        } catch (Throwable e) {
+            System.out.println("error: " + e.getMessage());
+            r = "internal server error";
+            t.sendResponseHeaders(500, r.length());
+            OutputStream os = t.getResponseBody();
+            os.write(r.getBytes());
+            os.close();
         }
+    }
 
     static private void routeRefundResult(HttpExchange t) throws IOException {
             System.out.println("Read request accepted");
@@ -941,75 +1001,147 @@ public class OrderService {
         }
 
     static private void routeRequestRefund(HttpExchange t) throws IOException {
-            System.out.println("Read request accepted");
-            List<List<String>> q = postToMap(buf(t.getRequestBody()));
-            List<List<String>> positions = new ArrayList<>();
-            String orderId = q.get("order_id");
-            Map<String, String> userInfo = getUserInfo(t);
+        System.out.println("routeRequestRefund accepted");
+        List<List<String>> q = postToMap(buf(t.getRequestBody()));
+        List<List<String>> positions = new ArrayList<>();
+        String orderId = q.get("order_id");
+        Map<String, String> userInfo = getUserInfo(t);
 
-            try {
+        try {
 
-                String orderSql = "select o.id, o.status_id, o.delivery_status_id, o.slot_id, o.user_id from orders o where o.id = " + orderId;
-                System.out.println("sql: " + orderSql);
-                ResultSet rs=stmt.executeQuery(orderSql);
+            String orderSql = "select o.id, o.status_id, o.payment_status_id, o.slot_id, o.user_id from orders o where o.id = " + orderId;
+            System.out.println("sql: " + orderSql);
+            ResultSet rs=stmt.executeQuery(orderSql);
 
-                if (!rs.next()) {
-                    r = "order is not found";
-                    t.sendResponseHeaders(404, r.length());
-                    System.out.println(r);
-                    OutputStream os = t.getResponseBody();
-                    os.write(r.getBytes());
-                    os.close();
-                    return;
-                }
+            if (!rs.next()) {
+                r = "order is not found";
+                t.sendResponseHeaders(404, r.length());
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+                return;
+            }
 
-                if (!userInfo.get("role").equals("admin")) {
-                    r = "not permitted;
-                    t.sendResponseHeaders(403, r.length());
-                    System.out.println(r);
-                    OutputStream os = t.getResponseBody();
-                    os.write(r.getBytes());
-                    os.close();
-                    return;
-                }
+            if (!userInfo.get("role").equals("admin")) {
+                r = "not permitted;
+                t.sendResponseHeaders(403, r.length());
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+                return;
+            }
 
-                if (!rs.getInt(3) != PAYMENT_STATUS_EXECUTED) {
-                    r = "incorrect status";
-                    t.sendResponseHeaders(409, r.length());
-                    System.out.println(r);
-                    OutputStream os = t.getResponseBody();
-                    os.write(r.getBytes());
-                    os.close();
-                    return;
-                }
+            if (!rs.getInt(3) != PAYMENT_STATUS_EXECUTED) {
+                r = "incorrect status";
+                t.sendResponseHeaders(409, r.length());
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+                return;
+            }
 
-                if (transferRefund(orderId)) {
-                    Statement _stmt2=connection.createStatement();
-                    String sql = "update orders set payment_status_id = " + PAYMENT_STATUS_REFUNDED + " where id = " + orderId;
-                    _stmt2.executeUpdate(sql);
-                    r = "";
-                    t.sendResponseHeaders(200, r.length());
-                    System.out.println("ok");
-                    OutputStream os = t.getResponseBody();
-                    os.write(r.getBytes());
-                    os.close();
-                } else {
-                    r = "cant create refund";
-                    t.sendResponseHeaders(500, r.length());
-                    System.out.println("ok");
-                    OutputStream os = t.getResponseBody();
-                    os.write(r.getBytes());
-                    os.close();
-                }
-            } catch (Throwable e) {
-                System.out.println("error: " + e.getMessage());
-                r = "internal server error";
+            if (transferRefund(orderId)) {
+                Statement _stmt2=connection.createStatement();
+                String sql = "update orders set payment_status_id = " + PAYMENT_STATUS_REFUNDED + " where id = " + orderId;
+                _stmt2.executeUpdate(sql);
+                r = "";
+                t.sendResponseHeaders(200, r.length());
+                System.out.println("ok");
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+            } else {
+                r = "cant create refund";
                 t.sendResponseHeaders(500, r.length());
+                System.out.println("ok");
                 OutputStream os = t.getResponseBody();
                 os.write(r.getBytes());
                 os.close();
             }
+        } catch (Throwable e) {
+            System.out.println("error: " + e.getMessage());
+            r = "internal server error";
+            t.sendResponseHeaders(500, r.length());
+            OutputStream os = t.getResponseBody();
+            os.write(r.getBytes());
+            os.close();
         }
+    }
+
+    static private void routeRequestPurchase(HttpExchange t) throws IOException {
+        System.out.println("routeRequestRefund accepted");
+        List<List<String>> q = postToMap(buf(t.getRequestBody()));
+        List<List<String>> positions = new ArrayList<>();
+        String orderId = q.get("order_id");
+        Map<String, String> userInfo = getUserInfo(t);
+
+        try {
+
+            String orderSql = "select o.id, o.status_id, o.payment_status_id, o.slot_id, o.user_id, o.amount from orders o where o.id = " + orderId;
+            System.out.println("sql: " + orderSql);
+            ResultSet rs=stmt.executeQuery(orderSql);
+
+            if (!rs.next()) {
+                r = "order is not found";
+                t.sendResponseHeaders(404, r.length());
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+                return;
+            }
+
+            if (!userInfo.get("user").equals(rs.getString("5"))) {
+                r = "not permitted;
+                t.sendResponseHeaders(403, r.length());
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+                return;
+            }
+
+            if (!rs.getInt(3) != PAYMENT_STATUS_WAITING) {
+                r = "incorrect status";
+                t.sendResponseHeaders(409, r.length());
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+                return;
+            }
+
+            int amount = rs.getInt(6);
+            if (transferPurchase(orderId, amount)) {
+                Statement _stmt2=connection.createStatement();
+                String sql = "update orders set payment_status_id = " + PAYMENT_STATUS_REQUESTED + " where id = " + orderId;
+                _stmt2.executeUpdate(sql);
+                r = "";
+                t.sendResponseHeaders(200, r.length());
+                System.out.println("ok");
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+            } else {
+                r = "cant create transfer";
+                t.sendResponseHeaders(500, r.length());
+                System.out.println("ok");
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+            }
+        } catch (Throwable e) {
+            System.out.println("error: " + e.getMessage());
+            r = "internal server error";
+            t.sendResponseHeaders(500, r.length());
+            OutputStream os = t.getResponseBody();
+            os.write(r.getBytes());
+            os.close();
+        }
+    }
 
     static private void routeAddItem(HttpExchange t) throws IOException {
         System.out.println("routeAddItem accepted");
