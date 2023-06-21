@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Started: v101");
+        System.out.println("Started: v102");
         System.out.println(dbHost);
         System.out.println(dbPort);
         System.out.println(dbUser);
@@ -1230,7 +1230,10 @@ public class OrderService {
     static private Map<String, String> postToMap(StringBuilder body){
         String[] parts = body
                 .toString()
+                .replaceAll("=", ":")
                 .replaceAll("\r", "")
+                .replaceAll(" ", "")
+                .replaceAll(";", "\n")
                 .split("\n");
         Map<String, String> result = new HashMap<>();
         for (String part: parts) {
