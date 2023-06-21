@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Hardcoded version: v111");
+        System.out.println("Hardcoded version: v112");
         System.out.println("Version from config:" + args[9]);
         System.out.println(dbHost);
         System.out.println(dbPort);
@@ -1191,7 +1191,10 @@ public class OrderService {
             String userId = "" + rs.getString(3);
             int status = rs.getInt(4);
 
-            if (!userId.equals(userInfo.get("id")) || !"amdin".equals(userInfo.get("role"))) {
+            if (!userId.equals(userInfo.get("id")) && !"amdin".equals(userInfo.get("role"))) {
+                System.out.println("userID from DB = " + userId);
+                System.out.println("userID from token = " + userInfo.get("id"));
+                System.out.println("role = " + userInfo.get("role"));
                 String r = "not permitted";
                 t.sendResponseHeaders(403, r.length());
                 System.out.println(r);
