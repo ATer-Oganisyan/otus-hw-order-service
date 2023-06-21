@@ -52,10 +52,16 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Started: v106");
+        System.out.println("Started: v107");
         System.out.println(dbHost);
         System.out.println(dbPort);
         System.out.println(dbUser);
+
+        System.out.println("sessionServiceHost: " + sessionServiceHost);
+        System.out.println("deleveryHost: " + deleveryHost);
+        System.out.println("stockHost: " + stockHost);
+        System.out.println("paymentHost: " + paymentHost);
+
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
         server.createContext("/", new MyHandler());
         server.setExecutor(null); // creates a default executor
@@ -198,7 +204,7 @@ public class OrderService {
         String r;
         String body = "token:" + token;
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(scheme + deleveryHost + "/catalog"))
+                .uri(URI.create(scheme + stockHost + "/catalog"))
                 .timeout(Duration.ofMinutes(1))
                 .header("Content-Type", "plain/text")
                 .POST(HttpRequest.BodyPublishers.ofString(body))
