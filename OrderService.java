@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Hardcoded version: v115");
+        System.out.println("Hardcoded version: v116");
         System.out.println("Version from config:" + args[9]);
         System.out.println(dbHost);
         System.out.println(dbPort);
@@ -863,7 +863,7 @@ public class OrderService {
                         return;
                     }
 
-                    if (rs.getInt(3) != DELEVERY_STATUS_NOT_RECEIVED || rs.getString("4") == null || "".equals(rs.getString("4"))) {
+                    if (rs.getInt(3) != DELEVERY_STATUS_NOT_RECEIVED || rs.getString(4) == null || "".equals(rs.getString(4))) {
                         String r = "delivery slot is not set or incorrect status";
                         t.sendResponseHeaders(409, r.length());
                         System.out.println(r);
