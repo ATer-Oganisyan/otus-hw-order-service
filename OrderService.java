@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Hardcoded version: v109");
+        System.out.println("Hardcoded version: v110");
         System.out.println("Version from config:" + args[9]);
         System.out.println(dbHost);
         System.out.println(dbPort);
@@ -554,7 +554,7 @@ public class OrderService {
             String itemsJson = "{" + String.join(", \n", items) + "}";
 
             r = "{id: " + id + ", request_id: " + request_id + ", user_id: " + userId + ", slot_id: " + slotId + ", status: " + status +  ", payment_status:" + paymentStatus + ", delivery_status:" + deliveryStatus + ", " +
-                    "items: { " + itemsJson + " }" +
+                    "items: " + itemsJson + " " +
                     "}";
 
             System.out.println("send headers");
@@ -696,7 +696,7 @@ public class OrderService {
 
 
             Statement _stmt=connection.createStatement();
-            rs=_stmt.executeQuery("select * from order_items where order_id = \"" + orderId + " \"");
+            rs=_stmt.executeQuery("select * from order_itmes where order_id = \"" + orderId + " \"");
             if (!rs.next()) {
                 String r = "order is emoty";
                 t.sendResponseHeaders(409, r.length());
@@ -1163,7 +1163,7 @@ public class OrderService {
 
     static private void routeAddItem(HttpExchange t) throws IOException {
         System.out.println("routeAddItem accepted");
-        Map<String, String> q = queryToMap(t.getRequestURI().getQuery());
+        Map<String, String> q = postToMap(buf(t.getRequestBody()));
         Map<String, String> userInfo = getUserInfo(t);
         Map<String, Map<String, String>> catalogInfo = getCatalogInfo(t);
         String orderId = q.get("order_id");
@@ -1204,7 +1204,7 @@ public class OrderService {
             }
 
             stmt=connection.createStatement();
-            orderSql = "select * from order_items where request_id = \"" + reqId + "\"";
+            orderSql = "select * from order_itmes where request_id = \"" + reqId + "\"";
             System.out.println("sql: " + orderSql);
             rs=stmt.executeQuery(orderSql);
 
@@ -1219,7 +1219,7 @@ public class OrderService {
             }
 
             Statement _stmt2=connection.createStatement();
-            String sql = "insert into order_items (request_id, order_id, catalog_id, cnt) values (\"" + reqId + "\", \"" + orderId + "\", \"" + catalogId + "\", " + cnt + ")";
+            String sql = "insert into order_itmes (request_id, order_id, catalog_id, cnt) values (\"" + reqId + "\", \"" + orderId + "\", \"" + catalogId + "\", " + cnt + ")";
 
             if (accuquireItem(orderId, catalogId, cnt, t)) {
                 try {

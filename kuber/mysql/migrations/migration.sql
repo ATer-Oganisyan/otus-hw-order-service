@@ -11,7 +11,7 @@ order_status_id TINYINT NOT NULL default 1,
 status_id TINYINT NOT NULL default 1
 );
 
-create table order_items (
+create table order_itmes (
 catalog_id INT NOT NULL,
 order_id INT NOT NULL,
 cnt INT NOT NULL,
