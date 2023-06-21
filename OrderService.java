@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Started: v105");
+        System.out.println("Started: v106");
         System.out.println(dbHost);
         System.out.println(dbPort);
         System.out.println(dbUser);
@@ -146,7 +146,7 @@ public class OrderService {
         String r;
         try {
             Statement stmt=connection.createStatement();
-            ResultSet rs=stmt.executeQuery("select id, request_id, created_at, user_id, slot_id, status_id from orders");
+            ResultSet rs=stmt.executeQuery("select id, request_id, created_at, user_id, slot_id, status_id, payment_status_id, delivery_status_id from orders");
             List<String> items = new ArrayList<>();
             while (rs.next()) {
                 String id = "" + rs.getInt(1);
@@ -155,7 +155,9 @@ public class OrderService {
                 String userId = rs.getString(4);
                 String slotId = "" + rs.getInt(5);
                 String status = getStatusById(rs.getInt(6));
-                r = "{id: " + id + ", request_id: " + request_id + ", user_id: " + userId + ", slot_id: " + slotId + ", status: " + status +  "}";
+                String paymentStatus = getPaymentStatusById(rs.getInt(7));
+                String deliveryStatus = getDeliveryStatusById(rs.getInt(8));
+                r = "{id: " + id + ", request_id: " + request_id + ", user_id: " + userId + ", slot_id: " + slotId + ", status: " + status +  ", payment_status:" + paymentStatus + ", delivery_status:" + deliveryStatus + "}";
                 items.add(r);
             }
             r = "{" + String.join(",", items) + "}";
@@ -460,6 +462,20 @@ public class OrderService {
         if (status == 2) return "In progress";
         if (status == 3) return "Done";
         return "Created";
+    }
+
+    static private String getPaymentStatusById(int status) {
+        if (status == 1) return "Waiting";
+        if (status == 2) return "Requested";
+        if (status == 3) return "Executed";
+        if (status == 4) return "Refund requested";
+        if (status == 5) return "Refund executed";
+        return "Unknown";
+    }
+
+    static private String getDeliveryStatusById(int status) {
+        if (status == 1) return "Not recieved";
+        return "Received";
     }
 
     static private void routeOrder(HttpExchange t) throws IOException {

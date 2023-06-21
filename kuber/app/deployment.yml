@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: order-service
-        image: arsenteroganisyan/order-service:v105
+        image: arsenteroganisyan/order-service:v106
 
         ports:
         - containerPort: 8000
