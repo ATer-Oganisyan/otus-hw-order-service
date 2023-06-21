@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Hardcoded version: v116");
+        System.out.println("Hardcoded version: v117");
         System.out.println("Version from config:" + args[9]);
         System.out.println(dbHost);
         System.out.println(dbPort);
@@ -101,7 +101,7 @@ public class OrderService {
             } else if ("/order/set-delivery-slot".equals(path)) { // admin or current user // DONE
                 routeSetDeliverySlot(t);
                 System.out.println("matched");
-            } else if ("/order/set-delivered".equals(path)) { // only admin can do it, and status will be checked
+            } else if ("/order/set-delivered".equals(path)) { // only admin can do it, and status will be checked // DONE
                 routeSetDelivered(t);
                 System.out.println("matched");
             } else if ("/order/request-purchase".equals(path)) { //
@@ -1098,7 +1098,7 @@ public class OrderService {
 
         try {
 
-            String orderSql = "select o.id, o.status_id, o.payment_status_id, o.slot_id, o.user_id, o.amount from orders o where o.id = " + orderId;
+            String orderSql = "select o.id, o.status_id, o.payment_status_id, o.slot_id, o.user_id, o.payment_amount from orders o where o.id = " + orderId;
             System.out.println("sql: " + orderSql);
             ResultSet rs=connection.createStatement().executeQuery(orderSql);
 
