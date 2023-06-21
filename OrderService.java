@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Hardcoded version: v114");
+        System.out.println("Hardcoded version: v115");
         System.out.println("Version from config:" + args[9]);
         System.out.println(dbHost);
         System.out.println(dbPort);
@@ -80,25 +80,25 @@ public class OrderService {
             if ("/health".equals(path)) {
                 routeHealth(t);
                 System.out.println("matched");
-            } else if ("/orders".equals(path)) { // only admin
+            } else if ("/orders".equals(path)) { // only admin // DONE
                 routeOrders(t);
                 System.out.println("matched");
-            } else if ("/order".equals(path)) { // order.user_id == current user_id || user is admin
+            } else if ("/order".equals(path)) { // order.user_id == current user_id || user is admin // DONE
                 routeOrder(t);
                 System.out.println("matched");
-            } else if ("/order/create".equals(path)) {
+            } else if ("/order/create".equals(path)) { // DONE
                 routeCreateOrder(t);
                 System.out.println("matched");
-            } else if ("/order/add-item".equals(path)) {
+            } else if ("/order/add-item".equals(path)) { // DONE
                 routeAddItem(t);
                 System.out.println("matched");
-            } else if ("/order/commit".equals(path)) { // should be checking for counts and stocks
+            } else if ("/order/commit".equals(path)) { // should be checking for counts and stocks // DONE
                 routeCommitOrder(t);
                 System.out.println("matched");
             } else if ("/order/complete".equals(path)) { // check payment and delivery statuses and set order status
                 routeCompleteOrder(t);
                 System.out.println("matched");
-            } else if ("/order/set-delivery-slot".equals(path)) { // admin or current user
+            } else if ("/order/set-delivery-slot".equals(path)) { // admin or current user // DONE
                 routeSetDeliverySlot(t);
                 System.out.println("matched");
             } else if ("/order/set-delivered".equals(path)) { // only admin can do it, and status will be checked
@@ -863,7 +863,7 @@ public class OrderService {
                         return;
                     }
 
-                    if (rs.getInt(3) == DELEVERY_STATUS_NOT_RECEIVED || rs.getString("4") == null || "".equals(rs.getString("4"))) {
+                    if (rs.getInt(3) != DELEVERY_STATUS_NOT_RECEIVED || rs.getString("4") == null || "".equals(rs.getString("4"))) {
                         String r = "delivery slot is not set or incorrect status";
                         t.sendResponseHeaders(409, r.length());
                         System.out.println(r);
