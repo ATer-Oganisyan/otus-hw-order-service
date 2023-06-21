@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: order-service
-        image: arsenteroganisyan/order-service:v107
+        image: arsenteroganisyan/order-service:v108
 
         ports:
         - containerPort: 8000
@@ -61,3 +61,8 @@ spec:
               configMapKeyRef:
                 name: config
                 key: order_delivery_host
+          - name: STOCK_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: config
+                key: order_stock_host

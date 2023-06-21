@@ -9,3 +9,4 @@ data:
   order_session_host: "otus-session-server.default.svc.cluster.local:8080"
   order_delivery_host: "delivery-service.default.svc.cluster.local:8080"
   order_payment_host: "payment-service.default.svc.cluster.local:8080"
+  order_stock_host: "stock-service.default.svc.cluster.local:8080"

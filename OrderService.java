@@ -52,7 +52,8 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Started: v107");
+        System.out.println("Hardcoded version: v108");
+        System.out.println("Version from config:" + args[9]);
         System.out.println(dbHost);
         System.out.println(dbPort);
         System.out.println(dbUser);
