@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Started: v104");
+        System.out.println("Started: v105");
         System.out.println(dbHost);
         System.out.println(dbPort);
         System.out.println(dbUser);
@@ -498,7 +498,7 @@ public class OrderService {
                 String goodDescription = catalogInfo.get(id).get("good_name");
                 String pricePerUnit = catalogInfo.get(id).get("price_per_unit");
                 String measurementUnits = catalogInfo.get(id).get("measurementUnits");
-                if (!userId.equals(userInfo.get("user")) && !"admin".equals(userInfo.get("role"))) {
+                if (!userId.equals(userInfo.get("id")) && !"admin".equals(userInfo.get("role"))) {
                     r = "not permitted";
                     t.sendResponseHeaders(403, r.length());
                     System.out.println(r);
@@ -556,7 +556,7 @@ public class OrderService {
                 return;
             }
 
-            if (!(userInfo.get("role").equals("admin")) && !userInfo.get("user").equals(rs.getInt(5))) {
+            if (!(userInfo.get("role").equals("admin")) && !userInfo.get("id").equals(rs.getInt(5))) {
                 String r = "not permitted";
                 t.sendResponseHeaders(403, r.length());
                 System.out.println(r);
@@ -626,7 +626,7 @@ public class OrderService {
                 return;
             } else {
 
-                if (!userInfo.get("user").equals(rs.getString(3))) {
+                if (!userInfo.get("id").equals(rs.getString(3))) {
                     String r = "not permitted";
                     t.sendResponseHeaders(403, r.length());
                     System.out.println(r);
@@ -713,7 +713,7 @@ public class OrderService {
                     return;
                 } else {
 
-                    if (!userInfo.get("user").equals(rs.getString(3))) {
+                    if (!userInfo.get("id").equals(rs.getString(3))) {
                         String r = "not permitted";
                         t.sendResponseHeaders(403, r.length());
                         System.out.println(r);
@@ -1075,7 +1075,7 @@ public class OrderService {
                 return;
             }
 
-            if (!userInfo.get("user").equals(rs.getString("5"))) {
+            if (!userInfo.get("id").equals(rs.getString("5"))) {
                 String r = "not permitted";
                 t.sendResponseHeaders(403, r.length());
                 System.out.println(r);
@@ -1145,7 +1145,7 @@ public class OrderService {
                 String userId = "" + rs.getString(3);
                 int status = rs.getInt(4);
 
-                if (!userId.equals(userInfo.get("user")) || !"amdin".equals(userInfo.get("role"))) {
+                if (!userId.equals(userInfo.get("id")) || !"amdin".equals(userInfo.get("role"))) {
                     String r = "not permitted";
                     t.sendResponseHeaders(403, r.length());
                     System.out.println(r);
@@ -1300,7 +1300,7 @@ public class OrderService {
         Map<String, String> q = postToMap(buf(t.getRequestBody()));
         String  request_id = q.get("request_id");
 
-        String user = getUserInfo(t).get("user");
+        String user = getUserInfo(t).get("id");
         if ("".equals(user) || user == null) {
             String r = "not permitted";
             t.sendResponseHeaders(403, r.length());

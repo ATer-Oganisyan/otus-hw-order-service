@@ -7,7 +7,8 @@ created_at TIMESTAMP not null default CURRENT_TIMESTAMP,
 payment_status_id TINYINT NOT NULL default 1,
 payment_amount INT NULL,
 delivery_status_id TINYINT NOT NULL default 1,
-order_status_id TINYINT NOT NULL default 1
+order_status_id TINYINT NOT NULL default 1,
+status_id TINYINT NOT NULL default 1
 );
 
 create table order_items (
