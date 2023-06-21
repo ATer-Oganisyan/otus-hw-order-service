@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Hardcoded version: v110");
+        System.out.println("Hardcoded version: v111");
         System.out.println("Version from config:" + args[9]);
         System.out.println(dbHost);
         System.out.println(dbPort);
@@ -1172,35 +1172,53 @@ public class OrderService {
         String cnt = q.get("count");
         try {
             Statement stmt=connection.createStatement();
-            String orderSql = "select o.id, o.user_id, o.status_id, o.created_at  from orders o where o.id = " + orderId;
+            String orderSql = "select o.id, o.request_id, o.user_id, o.status_id, o.created_at  from orders o where o.id = " + orderId;
             System.out.println("sql: " + orderSql);
             ResultSet rs=stmt.executeQuery(orderSql);
 
-            if (rs.next()) {
-                String id = "" + rs.getInt(1);
-                String request_id = rs.getString(2);
-                String userId = "" + rs.getString(3);
-                int status = rs.getInt(4);
+            if (!rs.next()) {
+                String r = "order is not found";
+                t.sendResponseHeaders(404, r.length());
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+                return;
+            }
 
-                if (!userId.equals(userInfo.get("id")) || !"amdin".equals(userInfo.get("role"))) {
-                    String r = "not permitted";
-                    t.sendResponseHeaders(403, r.length());
-                    System.out.println(r);
-                    OutputStream os = t.getResponseBody();
-                    os.write(r.getBytes());
-                    os.close();
-                    return;
-                }
+            String id = "" + rs.getInt(1);
+            String request_id = rs.getString(2);
+            String userId = "" + rs.getString(3);
+            int status = rs.getInt(4);
 
-                if (status != ORDER_STATUS_CREATED) {
-                    String r = "incorrect order status";
-                    t.sendResponseHeaders(409, r.length());
-                    System.out.println(r);
-                    OutputStream os = t.getResponseBody();
-                    os.write(r.getBytes());
-                    os.close();
-                    return;
-                }
+            if (!userId.equals(userInfo.get("id")) || !"amdin".equals(userInfo.get("role"))) {
+                String r = "not permitted";
+                t.sendResponseHeaders(403, r.length());
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+                return;
+            }
+
+            if (status != ORDER_STATUS_CREATED) {
+                String r = "incorrect order status";
+                t.sendResponseHeaders(409, r.length());
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+                return;
+            }
+
+            if (catalogInfo.get(catalogId) == null) {
+                String r = "product is not found";
+                t.sendResponseHeaders(404, r.length());
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+                return;
             }
 
             stmt=connection.createStatement();
