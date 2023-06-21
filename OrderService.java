@@ -541,7 +541,7 @@ public class OrderService {
             rs=stmt.executeQuery(orderSql);
 
             while (rs.next()) {
-                cnt = "" + rs.getInt(8);
+                cnt = "" + rs.getInt(2);
                 String goodCode = catalogInfo.get(id).get("good_code");
                 String goodName = catalogInfo.get(id).get("good_name");
                 String goodDescription = catalogInfo.get(id).get("good_name");
@@ -709,7 +709,7 @@ public class OrderService {
 
             Statement _stmt2=connection.createStatement();
             int amount = 500; // todo: calculate order amount
-            String sql = "update orders set status = " + ORDER_STATUS_COMMITED + ", amount = " + amount + " where id = " + orderId;
+            String sql = "update orders set status_id = " + ORDER_STATUS_COMMITED + ", amount = " + amount + " where id = " + orderId;
             _stmt2.executeUpdate(sql);
             String r = "";
             t.sendResponseHeaders(200, r.length());
