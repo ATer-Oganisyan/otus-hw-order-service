@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Hardcoded version: v108");
+        System.out.println("Hardcoded version: v109");
         System.out.println("Version from config:" + args[9]);
         System.out.println(dbHost);
         System.out.println(dbPort);
@@ -502,47 +502,61 @@ public class OrderService {
 
         try {
             Statement stmt=connection.createStatement();
-            String orderSql = "select o.id, o.request_id, o.user_id, o.slot_id, o.status_id, o.created_at, i.catalog_id, i.cnt  from orders o left join order_items i on i.order_id = o.id where o.id = " + qId;
+            String orderSql = "select id, request_id, created_at, user_id, slot_id, status_id, payment_status_id, delivery_status_id  from orders o where o.id = " + qId;
             System.out.println("sql: " + orderSql);
             ResultSet rs=stmt.executeQuery(orderSql);
 
             List<String> items = new ArrayList<>();
+            if (!rs.next()) {
+                r = "order is not found";
+                t.sendResponseHeaders(404, r.length());
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write("order is not found".getBytes());
+                os.close();
+                return;
+            }
+
+            id = "" + rs.getInt(1);
+            request_id = rs.getString(2);
+            created_at = "" + rs.getTimestamp(3).toString();
+            userId = rs.getString(4);
+            String slotId = "" + rs.getInt(5);
+            status = getStatusById(rs.getInt(6));
+            String paymentStatus = getPaymentStatusById(rs.getInt(7));
+            String deliveryStatus = getDeliveryStatusById(rs.getInt(8));
+            if (!userId.equals(userInfo.get("id")) && !"admin".equals(userInfo.get("role"))) {
+                r = "not permitted";
+                t.sendResponseHeaders(403, r.length());
+                System.out.println(r);
+                OutputStream os = t.getResponseBody();
+                os.write(r.getBytes());
+                os.close();
+                return;
+            }
+
+            stmt=connection.createStatement();
+            orderSql = "select catalog_id, cnt from order_itmes where order_id = " + qId;
+            System.out.println("sql: " + orderSql);
+            rs=stmt.executeQuery(orderSql);
+
             while (rs.next()) {
-                id = "" + rs.getInt(1);
-                request_id = rs.getString(2);
-                userId = rs.getString(3);
-                String slotId = rs.getString(4);
-                status = "" + getStatusById(rs.getInt(5));
-                created_at = "" + rs.getTimestamp(6).toString();
-                catalogId = rs.getString(7);
                 cnt = "" + rs.getInt(8);
                 String goodCode = catalogInfo.get(id).get("good_code");
                 String goodName = catalogInfo.get(id).get("good_name");
                 String goodDescription = catalogInfo.get(id).get("good_name");
                 String pricePerUnit = catalogInfo.get(id).get("price_per_unit");
                 String measurementUnits = catalogInfo.get(id).get("measurementUnits");
-                if (!userId.equals(userInfo.get("id")) && !"admin".equals(userInfo.get("role"))) {
-                    r = "not permitted";
-                    t.sendResponseHeaders(403, r.length());
-                    System.out.println(r);
-                    OutputStream os = t.getResponseBody();
-                    os.write(r.getBytes());
-                    os.close();
-                    return;
-                }
-                r = "{id:" + id + ",good_code:" + goodCode + ",good_name:" + goodName + ",good_description:" + goodDescription + ",count:" + cnt + ",price_per_unit:" + pricePerUnit +  ",measurementUnits:" + measurementUnits + "}";
-                items.add(r);
+                String item = "{good_code:" + goodCode + ",good_name:" + goodName + ",good_description:" + goodDescription + ",count:" + cnt + ",price_per_unit:" + pricePerUnit +  ",measurementUnits:" + measurementUnits + "}";
+                items.add(item);
             }
+
             String itemsJson = "{" + String.join(", \n", items) + "}";
-            if (items.size() == 0) {
-                r = "{}";
-            } else {
-                r = "{id: " + id + ", request_id: " + request_id + ", created_at: " + created_at  + ", status: " + status +  ", " +
-                        "items: " +
-                        "" +
-                        itemsJson
-                        + "}";
-            }
+
+            r = "{id: " + id + ", request_id: " + request_id + ", user_id: " + userId + ", slot_id: " + slotId + ", status: " + status +  ", payment_status:" + paymentStatus + ", delivery_status:" + deliveryStatus + ", " +
+                    "items: { " + itemsJson + " }" +
+                    "}";
+
             System.out.println("send headers");
             t.sendResponseHeaders(200, r.length());
             System.out.println("success");
