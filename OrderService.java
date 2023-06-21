@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Hardcoded version: v119");
+        System.out.println("Hardcoded version: v120");
         System.out.println("Version from config:" + args[9]);
         System.out.println(dbHost);
         System.out.println(dbPort);
@@ -228,6 +228,24 @@ public class OrderService {
         return parseCatalog(new StringBuilder(response.body()));
     }
 
+    static private String extractToken(HttpExchange t) {
+        Headers headers = t.getRequestHeaders();
+        List<String> headersList;
+        if (headers == null) {
+            System.out.println("headers = null");
+            headersList = new ArrayList<>();
+        } else {
+            System.out.println("headers.get");
+            headersList = headers.get("Cookie");
+        }
+        String cookieString = String.join(";", headersList);
+        System.out.println("cookieString = " + cookieString);
+        Map<String, String> cookie = postToMap(new StringBuilder(cookieString));
+        System.out.println("cookie = " + cookie);
+        String token = cookie.get("token");
+        return token;
+    }
+
     static private Map<String, String> getUserInfo(HttpExchange t) {
             // GET TOKEN FROM COOKIE
             Headers headers = t.getRequestHeaders();
@@ -370,7 +388,8 @@ public class OrderService {
         }
     }
 
-    static private boolean transferPurchase(String orderId, int amount) {
+    static private boolean transferPurchase(String orderId, int amount, HttpExchange t) {
+        String token = extractToken(t);
         String body = "order_id:" + orderId + "\namount:" + amount + "\ntransferMetaData:meta";
         System.out.println("http request to payment service: " + body);
         String r;
@@ -378,6 +397,7 @@ public class OrderService {
                 .uri(URI.create(scheme + paymentHost + "/transfer/create"))
                 .timeout(Duration.ofMinutes(1))
                 .header("Content-Type", "plain/text")
+                .header("Cookie", "token=" + token)
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
         HttpResponse<String> response;
@@ -1133,7 +1153,7 @@ public class OrderService {
             }
 
             int amount = rs.getInt(6);
-            if (transferPurchase(orderId, amount)) {
+            if (transferPurchase(orderId, amount, t)) {
                 Statement _stmt2=connection.createStatement();
                 String sql = "update orders set payment_status_id = " + PAYMENT_STATUS_REQUESTED + " where id = " + orderId;
                 _stmt2.executeUpdate(sql);
