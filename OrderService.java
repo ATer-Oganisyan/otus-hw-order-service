@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Hardcoded version: v118");
+        System.out.println("Hardcoded version: v119");
         System.out.println("Version from config:" + args[9]);
         System.out.println(dbHost);
         System.out.println(dbPort);
@@ -371,30 +371,30 @@ public class OrderService {
     }
 
     static private boolean transferPurchase(String orderId, int amount) {
-            String body = "order_id:" + orderId;
-            System.out.println("http request to payment service: " + body);
-            String r;
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(scheme + paymentHost + "/transfer/refund"))
-                    .timeout(Duration.ofMinutes(1))
-                    .header("Content-Type", "plain/text")
-                    .POST(HttpRequest.BodyPublishers.ofString(body))
-                    .build();
-            HttpResponse<String> response;
-            System.out.println("HttpResponse<String> response;");
-            try {
-                System.out.println("try");
-                response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                System.out.println("response = client.send(request, BodyHandlers.ofString());");
-                return response.statusCode() == 200 ? true : false;
-            } catch (IOException e) {
-                System.out.println("IOException");
-                return false;
-            } catch (InterruptedException e) {
-                System.out.println("InterruptedException");
-                return false;
-            }
+        String body = "order_id:" + orderId + "\namount:" + amount + "\ntransferMetaData:meta";
+        System.out.println("http request to payment service: " + body);
+        String r;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(scheme + paymentHost + "/transfer/create"))
+                .timeout(Duration.ofMinutes(1))
+                .header("Content-Type", "plain/text")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+        HttpResponse<String> response;
+        System.out.println("HttpResponse<String> response;");
+        try {
+            System.out.println("try");
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("response = client.send(request, BodyHandlers.ofString());");
+            return response.statusCode() == 200 ? true : false;
+        } catch (IOException e) {
+            System.out.println("IOException");
+            return false;
+        } catch (InterruptedException e) {
+            System.out.println("InterruptedException");
+            return false;
         }
+    }
 
     static private boolean accquireSlot(String slotId) {
         String body = "slot_id:" + slotId;
