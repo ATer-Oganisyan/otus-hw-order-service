@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Started: v102");
+        System.out.println("Started: v103");
         System.out.println(dbHost);
         System.out.println(dbPort);
         System.out.println(dbUser);
@@ -133,7 +133,7 @@ public class OrderService {
         System.out.println("Read request accepted");
         Map<String, String> userInfo = getUserInfo(t);
 
-        if (userInfo.get("role") != "admin") {
+        if ("admin".equals(userInfo.get("role"))) {
             System.out.println("error:404 only admin can get all orders");
             String r = "not permitted";
             t.sendResponseHeaders(404, r.length());
