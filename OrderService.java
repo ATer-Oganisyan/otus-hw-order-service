@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Hardcoded version: v112");
+        System.out.println("Hardcoded version: v113");
         System.out.println("Version from config:" + args[9]);
         System.out.println(dbHost);
         System.out.println(dbPort);
@@ -1262,6 +1262,9 @@ public class OrderService {
             System.out.println("send headers");
             t.sendResponseHeaders(200, "".length());
             System.out.println("success");
+            OutputStream os = t.getResponseBody();
+            os.write("".getBytes());
+            os.close();
         } catch (Throwable e) {
             System.out.println("error: " + e.getMessage());
             String r = "internal server error";
