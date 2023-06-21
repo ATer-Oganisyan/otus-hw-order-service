@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Hardcoded version: v117");
+        System.out.println("Hardcoded version: v118");
         System.out.println("Version from config:" + args[9]);
         System.out.println(dbHost);
         System.out.println(dbPort);
@@ -1112,7 +1112,7 @@ public class OrderService {
                 return;
             }
 
-            if (!userInfo.get("id").equals(rs.getString("5"))) {
+            if (!userInfo.get("id").equals(rs.getString(5))) {
                 String r = "not permitted";
                 t.sendResponseHeaders(403, r.length());
                 System.out.println(r);
