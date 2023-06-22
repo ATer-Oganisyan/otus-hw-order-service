@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Hardcoded version: v120");
+        System.out.println("Hardcoded version: v121");
         System.out.println("Version from config:" + args[9]);
         System.out.println(dbHost);
         System.out.println(dbPort);
@@ -104,10 +104,10 @@ public class OrderService {
             } else if ("/order/set-delivered".equals(path)) { // only admin can do it, and status will be checked // DONE
                 routeSetDelivered(t);
                 System.out.println("matched");
-            } else if ("/order/request-purchase".equals(path)) { //
+            } else if ("/order/request-purchase".equals(path)) { // DONE
                 routeRequestPurchase(t);
                 System.out.println("matched");
-            } else if ("/order/purchase-result".equals(path)) { //status will be checked
+            } else if ("/order/purchase-result".equals(path)) { //status will be checked // DONE
                 routePurchaseResult(t);
                 System.out.println("matched");
             } else if ("/order/request-refund".equals(path)) { // only admin can do it
@@ -756,7 +756,7 @@ public class OrderService {
 
             try {
 
-                String orderSql = "select o.id, o.status_id, o.delivery_status_id, o.payment_status_id from orders o where o.id = " + orderId;
+                String orderSql = "select o.id, o.status_id, o.delivery_status_id, o.payment_status_id, o.user_id, slot_id from orders o where o.id = " + orderId;
                 System.out.println("sql: " + orderSql);
                 ResultSet rs=connection.createStatement().executeQuery(orderSql);
 
@@ -770,7 +770,7 @@ public class OrderService {
                     return;
                 } else {
 
-                    if (!userInfo.get("id").equals(rs.getString(3))) {
+                    if (!userInfo.get("id").equals(rs.getString(5))) {
                         String r = "not permitted";
                         t.sendResponseHeaders(403, r.length());
                         System.out.println(r);
@@ -790,7 +790,7 @@ public class OrderService {
                         return;
                     }
 
-                    if (rs.getString(4) == null || "".equals(rs.getString(4))) {
+                    if (rs.getString(6) == null || "".equals(rs.getString(3))) {
                         String r = "delivery slot is not set";
                         t.sendResponseHeaders(409, r.length());
                         System.out.println(r);
@@ -800,7 +800,7 @@ public class OrderService {
                         return;
                     }
 
-                    if (rs.getInt(3) != PAYMENT_STATUS_EXECUTED) {
+                    if (rs.getInt(4) != PAYMENT_STATUS_EXECUTED) {
                         String r = "payment is not executed";
                         t.sendResponseHeaders(409, r.length());
                         System.out.println(r);
@@ -810,8 +810,8 @@ public class OrderService {
                         return;
                     }
 
-                    if (rs.getInt(4) != DELEVERY_STATUS_RECEIVED) {
-                        String r = "payment is not executed";
+                    if (rs.getInt(3) != DELEVERY_STATUS_RECEIVED) {
+                        String r = "order is not delivered";
                         t.sendResponseHeaders(409, r.length());
                         System.out.println(r);
                         OutputStream os = t.getResponseBody();
