@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Hardcoded version: v122");
+        System.out.println("Hardcoded version: v123");
         System.out.println("Version from config:" + args[9]);
         System.out.println(dbHost);
         System.out.println(dbPort);
@@ -95,7 +95,7 @@ public class OrderService {
             } else if ("/order/commit".equals(path)) { // should be checking for counts and stocks // DONE
                 routeCommitOrder(t);
                 System.out.println("matched");
-            } else if ("/order/complete".equals(path)) { // check payment and delivery statuses and set order status
+            } else if ("/order/complete".equals(path)) { // check payment and delivery statuses and set order status // DONE
                 routeCompleteOrder(t);
                 System.out.println("matched");
             } else if ("/order/set-delivery-slot".equals(path)) { // admin or current user // DONE
@@ -1084,7 +1084,7 @@ public class OrderService {
 
             if (transferRefund(orderId)) {
                 Statement _stmt2=connection.createStatement();
-                String sql = "update orders set payment_status_id = " + PAYMENT_STATUS_REFUNDED + " where id = " + orderId;
+                String sql = "update orders set payment_status_id = " + PAYMENT_STATUS_REFUND_REQUESTED + " where id = " + orderId;
                 _stmt2.executeUpdate(sql);
                 String r = "";
                 t.sendResponseHeaders(200, r.length());
