@@ -985,7 +985,7 @@ public class OrderService {
 
             try {
 
-                String orderSql = "select o.id, o.status_id, o.delivery_status_id, o.slot_id, o.user_id from orders o where o.id = " + orderId;
+                String orderSql = "select o.id, o.payment_status_id, o.user_id from orders o where o.id = " + orderId;
                 System.out.println("sql: " + orderSql);
                 ResultSet rs=connection.createStatement().executeQuery(orderSql);
 
@@ -999,8 +999,8 @@ public class OrderService {
                     return;
                 }
 
-                if (rs.getInt(3) != PAYMENT_STATUS_REFUND_REQUESTED) {
-                    String r = "incorrect status";
+                if (rs.getInt(2) != PAYMENT_STATUS_REFUND_REQUESTED) {
+                    String r = "incorrect payment status";
                     t.sendResponseHeaders(409, r.length());
                     System.out.println(r);
                     OutputStream os = t.getResponseBody();
