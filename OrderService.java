@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Hardcoded version: v121");
+        System.out.println("Hardcoded version: v122");
         System.out.println("Version from config:" + args[9]);
         System.out.println(dbHost);
         System.out.println(dbPort);
@@ -822,7 +822,7 @@ public class OrderService {
                 }
 
                 Statement _stmt2=connection.createStatement();
-                String sql = "update orders set status = " + ORDER_STATUS_COMPLETED + " where id = " + orderId;
+                String sql = "update orders set status_id = " + ORDER_STATUS_COMPLETED + " where id = " + orderId;
                 _stmt2.executeUpdate(sql);
                 String r = "";
                 t.sendResponseHeaders(200, r.length());
