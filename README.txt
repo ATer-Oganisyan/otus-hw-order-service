@@ -35,7 +35,7 @@ Enjoy :)
 
 To build app container run:
 
-docker build -t arsenteroganisyan/order-service:v123 /Users/arsen/otus-hw-order-service --no-cache --platform linux/amd64
+docker build -t arsenteroganisyan/order-service:v124 /Users/arsen/otus-hw-order-service --no-cache --platform linux/amd64
 
 
 

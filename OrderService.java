@@ -52,7 +52,7 @@ public class OrderService {
         deleveryHost = args[6];
         paymentHost = args[5];
         stockHost = args[8];
-        System.out.println("Hardcoded version: v123");
+        System.out.println("Hardcoded version: v124");
         System.out.println("Version from config:" + args[9]);
         System.out.println(dbHost);
         System.out.println(dbPort);
@@ -110,7 +110,7 @@ public class OrderService {
             } else if ("/order/purchase-result".equals(path)) { //status will be checked // DONE
                 routePurchaseResult(t);
                 System.out.println("matched");
-            } else if ("/order/request-refund".equals(path)) { // only admin can do it
+            } else if ("/order/request-refund".equals(path)) { // only admin can do it // DONE
                 routeRequestRefund(t);
                 System.out.println("matched");
             } else if ("/order/result-refund".equals(path)) { // status will be checked
@@ -613,7 +613,15 @@ public class OrderService {
                 return;
             }
 
-            if (!(userInfo.get("role").equals("admin")) && !userInfo.get("id").equals(rs.getInt(5))) {
+            String userInfoId = userInfo.get("id");
+            String userIdfromDb = "" + rs.getInt(5);
+            String userRole = userInfo.get("role");
+
+            if (!(userRole.equals("admin")) && !userInfoId.equals(userIdfromDb)) {
+                System.out.println("userInfoAdmin = " + userInfoId);
+                System.out.println("userIdfromDb = " + userIdfromDb);
+                System.out.println("userRole = " + userRole);
+
                 String r = "not permitted";
                 t.sendResponseHeaders(403, r.length());
                 System.out.println(r);
