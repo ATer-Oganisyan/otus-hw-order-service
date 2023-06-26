@@ -10,7 +10,147 @@ spec:
   - host: "arch.homework"
     http:
       paths:
-      - path: /
+      - path: /auth
+        pathType: Prefix
+        backend:
+          service:
+            name: otus-session-server
+            port:
+              number: 8080
+      - path: /user/create
+        pathType: Prefix
+        backend:
+          service:
+            name: profile-service
+            port:
+              number: 8080
+      - path: /create-catalog-item
+        pathType: Prefix
+        backend:
+          service:
+            name: stock-service
+            port:
+              number: 8080
+      - path: /catalog
+        pathType: Prefix
+        backend:
+          service:
+            name: stock-service
+            port:
+              number: 8080
+      - path: /fill-item
+        pathType: Prefix
+        backend:
+          service:
+            name: stock-service
+            port:
+              number: 8080
+      - path: /items-count
+        pathType: Prefix
+        backend:
+          service:
+            name: stock-service
+            port:
+              number: 8080
+      - path: /add-slot
+        pathType: Prefix
+        backend:
+          service:
+            name: delivery-service
+            port:
+              number: 8080
+      - path: /get-accessable-slots
+        pathType: Prefix
+        backend:
+          service:
+            name: delivery-service
+            port:
+              number: 8080
+      - path: /deposit
+        pathType: Prefix
+        backend:
+          service:
+            name: payment-service
+            port:
+              number: 8080 
+      - path: /order/create
+        pathType: Prefix
+        backend:
+          service:
+            name: order-service
+            port:
+              number: 8080      
+      - path: /order/add-item
+        pathType: Prefix
+        backend:
+          service:
+            name: order-service
+            port:
+              number: 8080      
+      - path: /order/set-delivery-slot
+        pathType: Prefix
+        backend:
+          service:
+            name: order-service
+            port:
+              number: 8080
+      - path: /order/request-purchase
+        pathType: Prefix
+        backend:
+          service:
+            name: order-service
+            port:
+              number: 8080
+      - path: /transfer/execute
+        pathType: Prefix
+        backend:
+          service:
+            name: payment-service
+            port:
+              number: 8080
+      - path: /order/purchase-result
+        pathType: Prefix
+        backend:
+          service:
+            name: order-service
+            port:
+              number: 8080
+      - path: /order/set-delivered
+        pathType: Prefix
+        backend:
+          service:
+            name: order-service
+            port:
+              number: 8080
+      - path: /order/complete
+        pathType: Prefix
+        backend:
+          service:
+            name: order-service
+            port:
+              number: 8080
+      - path: /order/request-refund
+        pathType: Prefix
+        backend:
+          service:
+            name: order-service
+            port:
+              number: 8080
+      - path: /transfer/execute-refund
+        pathType: Prefix
+        backend:
+          service:
+            name: payment-service
+            port:
+              number: 8080
+      - path: /transfer/execute-refund
+        pathType: Prefix
+        backend:
+          service:
+            name: payment-service
+            port:
+              number: 8080
+      - path: /order/result-refund
         pathType: Prefix
         backend:
           service:
